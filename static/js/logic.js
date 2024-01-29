@@ -53,17 +53,6 @@ function createFeatures(earthquakeData){
                 opacity: 0.5,
                 fillOpacity: 1 
             });
-
-
-        //function createcircleMarker(feature,latlng){
-            // return L.circleMarker(latlng, {
-            // radius: feature.properties.mag*5,
-            // fillcolor:getColor(feature.geometry.coordinates[2]),
-            // color:getColor(feature.properties.mag),
-            // weight:1,
-            // opacity:0.5,
-            // fillOpacity:0.8
-            // });
         
         }
     }).addTo(myMap);
