@@ -6,24 +6,23 @@ let myMap = L.map ("map", {
     //layers: [streetmap, earthquakes]
 
 });
-function chooseColor(depth){
-    
-    if(depth <10){
-        return "#ffffcc";
-    } else if(depth < 30){
-        return "#a1dab4";
-    } else if(depth < 50){
-        return "#41b6c4";
-    } else if(depth < 70){
-        return "#2c7b8";
-    } else if(depth < 90){
-        return "#253494";
-    } else {
-        return "#081d58";
-
-
+function getColor(depth) {
+    switch (true) {
+      case depth > 90:
+        return "#EA2C2C";
+      case depth > 70:
+        return "#EA822C";
+      case depth > 50:
+        return "#EE9C00";
+      case depth > 30:
+        return "#EECC00";
+      case depth > 10:
+        return "#D4EE00";
+      default:
+        return "#98EE00";
     }
-}
+  }
+
 //Perform a GET request to the query URL
 d3.json(queryUrl).then(function (data) {
     console.log(data);
@@ -49,41 +48,26 @@ function createFeatures(earthquakeData){
         //function createcircleMarker(feature,latlng){
             return L.circleMarker(latlng, {
             radius: feature.properties.mag*5,
-            fillcolor:chooseColor(feature.properties.mag),
-            color:chooseColor(feature.properties.mag),
-            weight:0.25,
+            fillcolor:getColor(feature.geometry.coordinates[2]),
+            color:getColor(feature.properties.mag),
+            weight:1,
             opacity:0.5,
             fillOpacity:0.8
             });
-        //};
+        
         }
     }).addTo(myMap);
-    console.log(earthquakeData)
-    //Create variable for earthquakes
-    //let earthquakes = L.geoJSON(earthquakeData, {
-    // onEachFeature: onEachFeature,
-    // pointToLayer:createcircleMarker
-
-    //});
+    console.log(earthquakeData)   
+    
     //send layer to create leaflet map funtion
     createMap(earthquakes);
-
-    //};
-
-
     // Defining function
     function createMap(earthquakes) {
         let streetmap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(myMap);
         
-    //    let basemaps = L.tileLayer(
-    //         "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'",
-    //         {
-    //           attribution:
-    //             'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-    //         });
-
+    
 
         //Create base layers
     let baseMaps = {
@@ -112,30 +96,27 @@ function createFeatures(earthquakeData){
 
  legend.onAdd= function(){
     const div = L.DomUtil.create('div','info legend');
-    const grades = [ '0,10,30,50,70,90'];
-    const labels =[];
-    let from, to;
+    const grades = [ '0','10','30','50','70','90'];
+    let colors = [
+        "#98EE00",
+        "#D4EE00",
+        "#EECC00",
+        "#EE9C00",
+        "#EA822C",
+        "#EA2C2C"
+      ];
 
-    // for (let i =0; <grades.length; i++){
-    //     from = grades[i];
-    //     to =grades[i +1];
-    // }
 
    legendInfo= "<h4>Earthquake\'s </h4><hr>";
-
+// white background for legend
    div.innerHTML= legendInfo;
+   for (let i = 0; i < grades.length; i++) {
+    div.innerHTML += "<i style='background: " + colors[i] + "'></i> "
+      + grades[i] + (grades[i + 1] ? "&ndash;" + grades[i + 1] + "<br>" : "+");
+  }
+  return div;
+};
 
-   grades.forEach((item, index) =>{
-      return div.innerHTML +=
-       '<i style="background:'+ chooseColor(item +1)+ ';"></i>&nbsp;'+
-      item +(grades[index +1]? '&nbsp;&ndas;&nbsp;' +grades[index +1]+'<br>':'+')
-
-
-   });
-
- return div;
-
- };
 
 
  legend.addTo(myMap);
